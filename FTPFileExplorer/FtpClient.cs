@@ -12,7 +12,7 @@ namespace FTPFileExplorer
             private string username;
             private string password = "";
             private string url;
-            private int bufSize = 1024;
+            private int bufSize = 1024; // for download/upload
 
             public bool Passive = true;
             public bool Binary = true;

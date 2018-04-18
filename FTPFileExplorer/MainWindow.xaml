@@ -10,7 +10,7 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="FTP File Explorer" Height="600" Width="1080">
+        Title="FTP File Explorer" Height="600" Width="1050">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -46,7 +46,7 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Height="36" MouseLeftButtonDown="FolderClick">
-                                        <Image Width="32" Height="32" Source="{Binding Type}" />
+                                        <Image Width="32" Height="32" Source="{Binding Img}" />
                                         <TextBlock Text="{Binding Name}" Margin="12,0" />
                                     </StackPanel>
                                 </DataTemplate>

@@ -46,9 +46,9 @@ namespace FTPFileExplorer
                         if (match.Length > 5)
                         {
                             string type = match.Groups[1].Value == "d" ? "dir" : "file";
-                            string img = match.Groups[1].Value == "d" ? "folder.png" : "file.png";
+                            string img = type == "dir" ? "img/folder.png" : "img/file.png";
                             string size = "";
-                            if (type == "File.png")
+                            if (type == "file")
                                 size = (Int64.Parse(match.Groups[3].Value.Trim()) / 1024).ToString() + "kBytes";
 
                             return new FileDirectoryInfo(size, type, match.Groups[6].Value, match.Groups[4].Value, img, addressBox.Text);
@@ -116,7 +116,7 @@ namespace FTPFileExplorer
             set { date = value; }
         }
 
-        public String Img
+        public string Img
         {
             get { return img; }
             set { img = value; }
