@@ -10,8 +10,53 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="FTP File Explorer" Height="350" Width="525">
+        Title="FTP File Explorer" Height="600" Width="1080">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Border BorderThickness="0,0,1,0" BorderBrush="White" Margin="5">
+            <Grid Width="270">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition Width="0.6*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Адрес сервера" />
+                <TextBox x:Name="addressBox" Grid.Column="1" Text="ftp://speedtest.tele2.net/"/>
+                <TextBlock Text="Логин" Grid.Row="1"/>
+                <TextBox x:Name="loginBox" Grid.Row="1" Grid.Column="1" Text="anonymous"/>
+                <TextBlock Text="Пароль" Grid.Row="2"/>
+                <PasswordBox x:Name="passBox" Grid.Row="2" Grid.Column="1"/>
+                <Button x:Name="btn_connect" Content="Соединиться по FTP" Margin="0,10" 
+                        Grid.Row="3" Grid.ColumnSpan="2" Width="180" HorizontalAlignment="Left" Click="ConnectBtnClick" />
+            </Grid>
+        </Border>
+        <ListView Grid.Column="1" Margin="5" x:Name="lbx_files" ItemsSource="{Binding}">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Файл/папка" Width="350">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Height="36" MouseLeftButtonDown="FolderClick">
+                                        <Image Width="32" Height="32" Source="{Binding Type}" />
+                                        <TextBlock Text="{Binding Name}" Margin="12,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Размер" Width="200" DisplayMemberBinding="{Binding FileSize}"/>
+                        <GridViewColumn Header="Дата создания" Width="150" DisplayMemberBinding="{Binding Date}"/>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>
