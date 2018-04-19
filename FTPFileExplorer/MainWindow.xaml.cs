@@ -87,10 +87,14 @@ namespace FTPFileExplorer
                     if (match.Length > 5)
                     {
                         string type = match.Groups[1].Value == "d" ? "dir" : "file";
-                        string img = type == "dir" ? "img/folder.png" : "img/file.png";
-                        string ext = (Path.GetExtension(match.Groups[6].Value).Trim('.'));
+                        string img = "";
+                        string ext = Path.GetExtension(match.Groups[6].Value).Trim('.').ToLower();
                         #region Extension check
-                        if (picExt.Contains(ext))
+                        if (type == "dir")
+                        {
+                            img = "img/folder.png";
+                        }
+                        else if (picExt.Contains(ext))
                         {
                             img = picExt[0];
                         }
@@ -139,7 +143,7 @@ namespace FTPFileExplorer
                 }).ToList();
                 if (!(uri.Count(c => c == '/') <= 3))
                 {
-                    entry = new EntryControl("", "up", "Up", "", "img/up.png", uri);
+                    entry = new EntryControl("", "up", "..", "", "img/up.png", uri);
                     entry.MouseDoubleClick += FolderClick;
                     list.Add(entry);
                 }
