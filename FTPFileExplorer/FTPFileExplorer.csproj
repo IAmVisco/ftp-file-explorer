@@ -120,5 +120,16 @@
   <ItemGroup>
     <Resource Include="img\up.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\docs.png" />
+    <Resource Include="img\sheets.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\music.png" />
+    <Resource Include="img\video.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\pdf.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

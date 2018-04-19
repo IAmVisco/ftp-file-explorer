@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib" 
         xmlns:local="clr-namespace:FTPFileExplorer"
         mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -55,7 +56,11 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Text="File/Folder" Margin="12"/>
             <TextBlock Grid.Row="0" Grid.Column="1" Text="Size" Margin="12"/>
             <TextBlock Grid.Row="0" Grid.Column="2" Text="Date" Margin="12"/>
-            <ListBox Grid.Row="1" Grid.ColumnSpan="3" Margin="5" x:Name="filesList" HorizontalContentAlignment="Stretch"/>
+            <ListBox Grid.Row="1" Grid.ColumnSpan="3" Margin="5" x:Name="filesList" HorizontalContentAlignment="Stretch">
+                <ListBox.Resources>
+                    <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">8</sys:Double>
+                </ListBox.Resources>
+            </ListBox>
         </Grid>
     </Grid>
 </Window>

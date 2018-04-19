@@ -23,22 +23,32 @@ namespace FTPFileExplorer
     public partial class MainWindow : Window
     {
         string prevAddress = "ftp://";
+        #region Extension lists
         List<string> picExt = new List<string>()
         {
-            "img/picture.png",
-            "jpg",
-            "jpeg",
-            "gif",
-            "png",
-            "bmp"
+            "img/picture.png", "jpg", "jpeg", "gif", "png", "bmp"
         };
         List<string> archiveExt = new List<string>()
         {
-            "img/archive.png",
-            "zip",
-            "rar",
-            "7z",
+            "img/archive.png", "zip", "rar", "7z", "tar", "gz", "jar"
         };
+        List<string> docsExt = new List<string>()
+        {
+            "img/docs.png", "doc", "docx"
+        };
+        List<string> sheetsExt = new List<string>()
+        {
+            "img/sheets.png", "xls", "xlsx"
+        };
+        List<string> musicExt = new List<string>()
+        {
+            "img/music.png", "mp3", "flac", "ogg", "wav", "ac3", "wma", "m4a"
+        };
+        List<string> videoExt = new List<string>()
+        {
+            "img/video.png", "avi", "wmw", "mkv", "3gp", "flv", "mpeg", "mp4", "mov", "vob"
+        };
+        #endregion
 
         public MainWindow()
         {
@@ -52,16 +62,22 @@ namespace FTPFileExplorer
             string pass = passBox.Password;
             string[] r = { };
             FtpClient.Client client = null;
-            Cursor = Cursors.AppStarting;
-            await Task.Run(() =>
-            {            
-                client = new FtpClient.Client(uri, login, pass);
-                r = client.ListDirectoryDetails();
-            });
-            Cursor = Cursors.Arrow;
+            EntryControl entry = null;
+
             try
-            {          
-                EntryControl entry;
+            {
+                Cursor = Cursors.AppStarting;
+                await Task.Run(() =>
+                {
+                    //try
+                    {
+                        client = new FtpClient.Client(uri, login, pass);
+                        r = client.ListDirectoryDetails();
+                    }
+                    //catch (Exception ex) { } needed in debug mode
+                });
+                Cursor = Cursors.Arrow;
+
                 Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
                     RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
               
@@ -73,6 +89,7 @@ namespace FTPFileExplorer
                         string type = match.Groups[1].Value == "d" ? "dir" : "file";
                         string img = type == "dir" ? "img/folder.png" : "img/file.png";
                         string ext = (Path.GetExtension(match.Groups[6].Value).Trim('.'));
+                        #region Extension check
                         if (picExt.Contains(ext))
                         {
                             img = picExt[0];
@@ -81,20 +98,53 @@ namespace FTPFileExplorer
                         {
                             img = archiveExt[0];
                         }
+                        else if (docsExt.Contains(ext))
+                        {
+                            img = docsExt[0];
+                        }
+                        else if (sheetsExt.Contains(ext))
+                        {
+                            img = sheetsExt[0];
+                        }
+                        else if (musicExt.Contains(ext))
+                        {
+                            img = musicExt[0];
+                        }
+                        else if (videoExt.Contains(ext))
+                        {
+                            img = videoExt[0];
+                        }
+                        else if (ext == "txt")
+                        {
+                            img = "img/txt.png";
+                        }
+                        else if (ext == "pdf")
+                        {
+                            img = "img/pdf.png";
+                        }
+                        else
+                        {
+                            img = "img/file.png";
+                        }
+                        #endregion
                         string size = "";
                         if (type == "file")
                             size = string.Format("{0:n0}", (Int64.Parse(match.Groups[3].Value.Trim()) / 1024)) + " KB";
-                        entry = new EntryControl(size, type, match.Groups[6].Value, match.Groups[4].Value, img, addressBox.Text);
+                        entry = new EntryControl(size, type, match.Groups[6].Value, match.Groups[4].Value, img, uri);
                         entry.MouseDoubleClick += FolderClick;
                         return entry;
                     }
                     else
                         return new EntryControl();
                 }).ToList();
-                entry = new EntryControl("", "up", "Up", "", "img/up.png", addressBox.Text);
-                entry.MouseDoubleClick += FolderClick;
-                list.Add(entry);
+                if (!(uri.Count(c => c == '/') <= 3))
+                {
+                    entry = new EntryControl("", "up", "Up", "", "img/up.png", uri);
+                    entry.MouseDoubleClick += FolderClick;
+                    list.Add(entry);
+                }
                 list.Reverse();
+
                 filesList.Items.Clear();
                 foreach (EntryControl entryControl in list)
                     filesList.Items.Add(entryControl);
@@ -102,6 +152,10 @@ namespace FTPFileExplorer
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString() + ": \n" + ex.Message);
+            }
+            finally
+            {
+                Cursor = Cursors.Arrow;
             }
 
         }
