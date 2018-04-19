@@ -38,7 +38,7 @@ namespace FTPFileExplorer
 
             private FtpWebRequest CreateRequest(string url, string method)
             {
-                var r = (FtpWebRequest)WebRequest.Create(url);
+                FtpWebRequest r = (FtpWebRequest)WebRequest.Create(url);
 
                 r.Credentials = new NetworkCredential(username, password);
                 r.Method = method;
@@ -89,7 +89,6 @@ namespace FTPFileExplorer
                         }
                     }
                 }
-
                 return list.ToArray();
             }
 
@@ -112,11 +111,8 @@ namespace FTPFileExplorer
                         }
                     }
                 }
-
                 return list.ToArray();
             }
-
-
         }
     }
 }

@@ -60,6 +60,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="EntryControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,6 +71,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EntryControl.xaml.cs">
+      <DependentUpon>EntryControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="FtpClient.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -106,6 +113,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="img\file.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\archive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\up.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
