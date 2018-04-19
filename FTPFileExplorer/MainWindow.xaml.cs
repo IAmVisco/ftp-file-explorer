@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -14,6 +13,7 @@ using System.Windows.Navigation;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace FTPFileExplorer
 {
@@ -45,17 +45,27 @@ namespace FTPFileExplorer
             InitializeComponent();
         }
 
-        private void ConnectBtnClick(object sender, RoutedEventArgs e)
+        private async void ConnectBtnClick(object sender, RoutedEventArgs e)
         {
+            string uri = addressBox.Text;
+            string login = loginBox.Text;
+            string pass = passBox.Password;
+            string[] resp = { };
+            FtpClient.Client client = null;
+            Cursor = Cursors.AppStarting;
+            await Task.Run(() =>
+            {            
+                client = new FtpClient.Client(uri, login, pass);
+                resp = client.ListDirectoryDetails();
+            });
+            Cursor = Cursors.Arrow;
             try
-            {
-                FtpClient.Client client = new FtpClient.Client(addressBox.Text, loginBox.Text, passBox.Password);
+            {          
                 EntryControl entry;
                 Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
                     RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-
-                List<EntryControl> list = client.ListDirectoryDetails()
-                .Select(s =>
+              
+                List<EntryControl> list = resp.Select(s =>
                 {
                     Match match = regex.Match(s);
                     if (match.Length > 5)
@@ -89,10 +99,11 @@ namespace FTPFileExplorer
                 foreach (EntryControl entryControl in list)
                     filesList.Items.Add(entryControl);
             }
-        catch (Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString() + ": \n" + ex.Message);
             }
+
         }
 
         private void FolderClick(object sender, MouseButtonEventArgs e)
