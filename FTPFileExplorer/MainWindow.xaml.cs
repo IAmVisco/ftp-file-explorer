@@ -50,13 +50,13 @@ namespace FTPFileExplorer
             string uri = addressBox.Text;
             string login = loginBox.Text;
             string pass = passBox.Password;
-            string[] resp = { };
+            string[] r = { };
             FtpClient.Client client = null;
             Cursor = Cursors.AppStarting;
             await Task.Run(() =>
             {            
                 client = new FtpClient.Client(uri, login, pass);
-                resp = client.ListDirectoryDetails();
+                r = client.ListDirectoryDetails();
             });
             Cursor = Cursors.Arrow;
             try
@@ -65,7 +65,7 @@ namespace FTPFileExplorer
                 Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
                     RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
               
-                List<EntryControl> list = resp.Select(s =>
+                List<EntryControl> list = r.Select(s =>
                 {
                     Match match = regex.Match(s);
                     if (match.Length > 5)
