@@ -53,6 +53,7 @@ namespace FTPFileExplorer
         public MainWindow()
         {
             InitializeComponent();
+            statusBox.Text = "Loaded";
         }
 
         private async void ConnectBtnClick(object sender, RoutedEventArgs e)
@@ -67,6 +68,8 @@ namespace FTPFileExplorer
             try
             {
                 Cursor = Cursors.AppStarting;
+                ripple.Visibility = Visibility.Visible;
+                statusBox.Text = "Connecting...";
                 await Task.Run(() =>
                 {
                     //try
@@ -77,10 +80,11 @@ namespace FTPFileExplorer
                     //catch (Exception ex) { } needed in debug mode
                 });
                 Cursor = Cursors.Arrow;
+                ripple.Visibility = Visibility.Hidden;
 
                 Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
                     RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-              
+                statusBox.Text = "Parsing results...";
                 List<EntryControl> list = r.Select(s =>
                 {
                     Match match = regex.Match(s);
@@ -152,6 +156,7 @@ namespace FTPFileExplorer
                 filesList.Items.Clear();
                 foreach (EntryControl entryControl in list)
                     filesList.Items.Add(entryControl);
+                statusBox.Text = "Loaded";
             }
             catch (Exception ex)
             {

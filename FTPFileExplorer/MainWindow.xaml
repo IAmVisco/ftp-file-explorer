@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:local="clr-namespace:FTPFileExplorer"
         mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -14,16 +15,19 @@
         Title="FTP File Explorer" Height="600" Width="1050">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="0.3*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="30px"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Адрес сервера" Margin="5,10,0,5"/>
+        <TextBlock Text="Адрес сервера" Margin="5,10,0,7"/>
         <TextBox x:Name="addressBox" Grid.Column="2"  Text="ftp://speedtest.tele2.net/"/>
-        <Border Grid.Row="1" BorderThickness="0,0,1,0" BorderBrush="White" Margin="5">
+        <TextBlock x:Name="statusBox" Text="Status" Grid.Row="2" HorizontalAlignment="Left" Margin="10,6"/>
+        <Image gif:ImageBehavior.AnimatedSource="img/ripple.gif" Grid.Row="2" Grid.Column="2" x:Name="ripple" Visibility="Hidden" HorizontalAlignment="Right"/>
+        <Border Grid.Row="1" BorderThickness="0,0,1,1" BorderBrush="Gray" Margin="5,0,0,0">
             <Grid Width="270">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.4*"/>
@@ -43,24 +47,26 @@
                         Grid.Row="3" Grid.ColumnSpan="2" Width="180" HorizontalAlignment="Left" Click="ConnectBtnClick" />
             </Grid>
         </Border>
-        <Grid Grid.Row="1" Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="File/Folder" Margin="12"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="Size" Margin="12"/>
-            <TextBlock Grid.Row="0" Grid.Column="2" Text="Date" Margin="12"/>
-            <ListBox Grid.Row="1" Grid.ColumnSpan="3" Margin="5" x:Name="filesList" HorizontalContentAlignment="Stretch">
-                <ListBox.Resources>
-                    <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">8</sys:Double>
-                </ListBox.Resources>
-            </ListBox>
-        </Grid>
+        <Border Grid.Row="1" Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="Gray">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="File/Folder" Margin="12"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Size" Margin="12"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Date" Margin="12"/>
+                <ListBox Grid.Row="1" Grid.ColumnSpan="3" Margin="5" x:Name="filesList" HorizontalContentAlignment="Stretch">
+                    <ListBox.Resources>
+                        <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">8</sys:Double>
+                    </ListBox.Resources>
+                </ListBox>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
