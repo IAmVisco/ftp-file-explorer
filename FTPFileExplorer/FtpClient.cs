@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Windows;
 
 namespace FTPFileExplorer
 {
@@ -12,7 +13,7 @@ namespace FTPFileExplorer
             private string username;
             private string password = "";
             private string url;
-            private int bufSize = 1024; // for download/upload
+            private int buffSize = 1024;
 
             public bool Passive = true;
             public bool Binary = true;
@@ -112,6 +113,34 @@ namespace FTPFileExplorer
                     }
                 }
                 return list.ToArray();
+            }
+
+            public string DownloadFile(string source, string dest)
+            {
+                FtpWebRequest request = CreateRequest(CombinePaths(url, source), WebRequestMethods.Ftp.DownloadFile);
+ 
+                byte[] buffer = new byte[buffSize];
+
+                using (FtpWebResponse resp = (FtpWebResponse)request.GetResponse())
+                {
+                    using (Stream stream = resp.GetResponseStream())
+                    {
+                        using (FileStream fs = new FileStream(dest, FileMode.OpenOrCreate))
+                        {
+                            int readCount = stream.Read(buffer, 0, buffSize);
+
+                            while (readCount > 0)
+                            {
+                                if (Hash)
+                                    Console.Write("#");
+                                
+                                fs.Write(buffer, 0, readCount);
+                                readCount = stream.Read(buffer, 0, buffSize);
+                            }
+                        }
+                    }
+                    return resp.StatusDescription;
+                }
             }
         }
     }

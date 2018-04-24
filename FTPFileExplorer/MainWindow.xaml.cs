@@ -14,6 +14,7 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 
 namespace FTPFileExplorer
 {
@@ -23,6 +24,8 @@ namespace FTPFileExplorer
     public partial class MainWindow : Window
     {
         string prevAddress = "ftp://";
+        FtpClient.Client client = null;
+
         #region Extension lists
         List<string> picExt = new List<string>()
         {
@@ -53,7 +56,7 @@ namespace FTPFileExplorer
         public MainWindow()
         {
             InitializeComponent();
-            statusBox.Text = "Loaded";
+            statusBox.Text = "";
         }
 
         private async void ConnectBtnClick(object sender, RoutedEventArgs e)
@@ -62,7 +65,6 @@ namespace FTPFileExplorer
             string login = loginBox.Text;
             string pass = passBox.Password;
             string[] r = { };
-            FtpClient.Client client = null;
             EntryControl entry = null;
 
             try
@@ -84,7 +86,6 @@ namespace FTPFileExplorer
 
                 Regex regex = new Regex(@"^([d-])([rwxt-]{3}){3}\s+\d{1,}\s+.*?(\d{1,})\s+(\w+\s+\d{1,2}\s+(?:\d{4})?)(\d{1,2}:\d{2})?\s+(.+?)\s?$",
                     RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-                statusBox.Text = "Parsing results...";
                 List<EntryControl> list = r.Select(s =>
                 {
                     Match match = regex.Match(s);
@@ -156,7 +157,7 @@ namespace FTPFileExplorer
                 filesList.Items.Clear();
                 foreach (EntryControl entryControl in list)
                     filesList.Items.Add(entryControl);
-                statusBox.Text = "Loaded";
+                statusBox.Text = "";
             }
             catch (Exception ex)
             {
@@ -169,7 +170,7 @@ namespace FTPFileExplorer
 
         }
 
-        private void FolderClick(object sender, MouseButtonEventArgs e)
+        private async void FolderClick(object sender, MouseButtonEventArgs e)
         {
             EntryControl entry = (sender as EntryControl);
 
@@ -181,12 +182,48 @@ namespace FTPFileExplorer
             }
             else if (entry.Type == "up")
             {
-                if (entry.address.LastIndexOf('/') + 1 == entry.address.Length)
-                    addressBox.Text = entry.address.Substring(0, entry.address.Remove(entry.address.Length - 1).LastIndexOf('/') + 1);
-                else
-                    addressBox.Text = entry.address.Substring(0, entry.address.LastIndexOf('/') + 1); // useless?
+                GoBack();
+            }
+            else
+            {
+                SaveFileDialog sfd = new SaveFileDialog
+                {
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads",
+                    RestoreDirectory = true,
+                    Filter = "All files(*.*)|*.*",
+                    FileName = entry.FileName.Text
+                };
+
+                if (sfd.ShowDialog() == true)
+                {
+                    pBar.Visibility = Visibility.Visible;
+                    string status = "";
+                    string filename = entry.FileName.Text;
+
+                    await Task.Run(() =>
+                    {
+                        status = client.DownloadFile(filename, sfd.FileName);
+                    });
+
+                    statusBox.Text = status.Substring(4);
+                    pBar.Visibility = Visibility.Hidden;
+                }
+            }
+        }
+
+        private void GoBack()
+        {
+            addressBox.Text = addressBox.Text.Substring(0, addressBox.Text.Remove(addressBox.Text.Length - 1).LastIndexOf('/') + 1);
+            ConnectBtnClick(null, null);
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            MessageBox.Show(e.Key.ToString());
+            if (e.Key == Key.F5)
                 ConnectBtnClick(null, null);
-            }            
+            if (e.Key == Key.BrowserBack)
+                GoBack();
         }
     }
 }
