@@ -217,6 +217,7 @@ namespace FTPFileExplorer
                 if (sfd.ShowDialog() == true)
                 {
                     pBar.Visibility = Visibility.Visible;
+                    percentage.Visibility = Visibility.Visible;
                     string status = "";
                     string filename = entry.FileName.Text;
                     isDownloading = true;
@@ -230,6 +231,7 @@ namespace FTPFileExplorer
 
                     statusBox.Text = status.Substring(4);
                     pBar.Visibility = Visibility.Hidden;
+                    percentage.Visibility = Visibility.Hidden;
                 }
             }
         }
@@ -246,6 +248,11 @@ namespace FTPFileExplorer
                 ConnectBtnClick(null, null);
             if (e.Key == Key.BrowserBack)
                 GoBack();
+        }
+
+        private void pBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            percentage.Text = Math.Truncate((pBar.Value / pBar.Maximum) * 100).ToString() + "% " + pBar.Value.ToString() + "/" + pBar.Maximum.ToString();
         }
     }
 }
