@@ -130,21 +130,23 @@ namespace FTPFileExplorer
             {
                 FtpWebRequest request = CreateRequest(CombinePaths(url, source), WebRequestMethods.Ftp.DownloadFile);
 
-                //if (GetFileSize(source).ContentLength <= 0)
-                //    pBar.IsIndeterminate = true;
-                //else
-                //{
-                //    pBar.IsIndeterminate = false;
-                //    pBar.Maximum = sizeResponse.ContentLength;
-                //    pBar.Value = 0;
-                //}
-
+                pBar.Dispatcher.Invoke(() =>
+                {
+                    if (GetFileSize(source) <= 0)
+                        pBar.IsIndeterminate = true;
+                    else
+                    {
+                        pBar.IsIndeterminate = false;
+                        pBar.Maximum = GetFileSize(source);
+                        pBar.Value = 0;
+                    }
+                });
 
                 byte[] buffer = new byte[buffSize];
 
-                using (FtpWebResponse dlResponse = (FtpWebResponse)request.GetResponse())
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
                 {
-                    using (Stream stream = dlResponse.GetResponseStream())
+                    using (Stream stream = response.GetResponseStream())
                     {
                         using (FileStream fs = new FileStream(dest, FileMode.OpenOrCreate))
                         {
@@ -153,12 +155,17 @@ namespace FTPFileExplorer
                             while (readCount > 0)
                             {                                
                                 fs.Write(buffer, 0, readCount);
-                                //pBar.Value = pBar.Value + readCount;
+
+                                pBar.Dispatcher.Invoke(() =>
+                                {
+                                    pBar.Value = pBar.Value + readCount;
+                                });
+
                                 readCount = stream.Read(buffer, 0, buffSize);
                             }
                         }
                     }
-                    return dlResponse.StatusDescription;
+                    return response.StatusDescription;
                 }
             }
         }

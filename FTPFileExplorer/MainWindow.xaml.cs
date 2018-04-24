@@ -25,6 +25,7 @@ namespace FTPFileExplorer
     {
         string prevAddress = "ftp://";
         FtpClient.Client client = null;
+        bool isDownloading = false;
 
         #region Extension lists
         List<string> picExt = new List<string>()
@@ -200,6 +201,11 @@ namespace FTPFileExplorer
             }
             else
             {
+                if (isDownloading)
+                {
+                    MessageBox.Show("Another download in progress,\nplease wait for it to finish.");
+                    return;
+                }
                 SaveFileDialog sfd = new SaveFileDialog
                 {
                     InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads",
@@ -213,11 +219,14 @@ namespace FTPFileExplorer
                     pBar.Visibility = Visibility.Visible;
                     string status = "";
                     string filename = entry.FileName.Text;
+                    isDownloading = true;
 
                     await Task.Run(() =>
                     {
                         status = client.DownloadFile(filename, sfd.FileName, pBar);
                     });
+
+                    isDownloading = false;
 
                     statusBox.Text = status.Substring(4);
                     pBar.Visibility = Visibility.Hidden;
@@ -230,7 +239,7 @@ namespace FTPFileExplorer
             addressBox.Text = addressBox.Text.Substring(0, addressBox.Text.Remove(addressBox.Text.Length - 1).LastIndexOf('/') + 1);
             ConnectBtnClick(null, null);
         }
-
+   
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F5)
