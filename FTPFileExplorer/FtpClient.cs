@@ -72,6 +72,16 @@ namespace FTPFileExplorer
                 return PrintDir();
             }
 
+            public long GetFileSize(string fileName)
+            {
+                FtpWebRequest request = CreateRequest(CombinePaths(url, fileName), WebRequestMethods.Ftp.GetFileSize);
+
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                {
+                    return response.ContentLength;
+                }
+            }
+
             public string[] ListDirectory()
             {
                 List<string> list = new List<string>();
@@ -118,11 +128,9 @@ namespace FTPFileExplorer
 
             public string DownloadFile(string source, string dest, ProgressBar pBar)
             {
-                FtpWebRequest dlRequest = CreateRequest(CombinePaths(url, source), WebRequestMethods.Ftp.DownloadFile);
-                FtpWebRequest sizeRequest = CreateRequest(CombinePaths(url, source), WebRequestMethods.Ftp.GetFileSize);
-                FtpWebResponse sizeResponse = (FtpWebResponse)sizeRequest.GetResponse();
-                
-                //if (sizeResponse.ContentLength <= 0)
+                FtpWebRequest request = CreateRequest(CombinePaths(url, source), WebRequestMethods.Ftp.DownloadFile);
+
+                //if (GetFileSize(source).ContentLength <= 0)
                 //    pBar.IsIndeterminate = true;
                 //else
                 //{
@@ -134,7 +142,7 @@ namespace FTPFileExplorer
 
                 byte[] buffer = new byte[buffSize];
 
-                using (FtpWebResponse dlResponse = (FtpWebResponse)dlRequest.GetResponse())
+                using (FtpWebResponse dlResponse = (FtpWebResponse)request.GetResponse())
                 {
                     using (Stream stream = dlResponse.GetResponseStream())
                     {
@@ -145,7 +153,7 @@ namespace FTPFileExplorer
                             while (readCount > 0)
                             {                                
                                 fs.Write(buffer, 0, readCount);
-                                pBar.Value = pBar.Value + readCount;
+                                //pBar.Value = pBar.Value + readCount;
                                 readCount = stream.Read(buffer, 0, buffSize);
                             }
                         }
