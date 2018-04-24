@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace FTPFileExplorer
 {
@@ -115,31 +116,41 @@ namespace FTPFileExplorer
                 return list.ToArray();
             }
 
-            public string DownloadFile(string source, string dest)
+            public string DownloadFile(string source, string dest, ProgressBar pBar)
             {
-                FtpWebRequest request = CreateRequest(CombinePaths(url, source), WebRequestMethods.Ftp.DownloadFile);
- 
+                FtpWebRequest dlRequest = CreateRequest(CombinePaths(url, source), WebRequestMethods.Ftp.DownloadFile);
+                FtpWebRequest sizeRequest = CreateRequest(CombinePaths(url, source), WebRequestMethods.Ftp.GetFileSize);
+                FtpWebResponse sizeResponse = (FtpWebResponse)sizeRequest.GetResponse();
+                
+                //if (sizeResponse.ContentLength <= 0)
+                //    pBar.IsIndeterminate = true;
+                //else
+                //{
+                //    pBar.IsIndeterminate = false;
+                //    pBar.Maximum = sizeResponse.ContentLength;
+                //    pBar.Value = 0;
+                //}
+
+
                 byte[] buffer = new byte[buffSize];
 
-                using (FtpWebResponse resp = (FtpWebResponse)request.GetResponse())
+                using (FtpWebResponse dlResponse = (FtpWebResponse)dlRequest.GetResponse())
                 {
-                    using (Stream stream = resp.GetResponseStream())
+                    using (Stream stream = dlResponse.GetResponseStream())
                     {
                         using (FileStream fs = new FileStream(dest, FileMode.OpenOrCreate))
                         {
                             int readCount = stream.Read(buffer, 0, buffSize);
 
                             while (readCount > 0)
-                            {
-                                if (Hash)
-                                    Console.Write("#");
-                                
+                            {                                
                                 fs.Write(buffer, 0, readCount);
+                                pBar.Value = pBar.Value + readCount;
                                 readCount = stream.Read(buffer, 0, buffSize);
                             }
                         }
                     }
-                    return resp.StatusDescription;
+                    return dlResponse.StatusDescription;
                 }
             }
         }

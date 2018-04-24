@@ -61,11 +61,22 @@ namespace FTPFileExplorer
 
         private async void ConnectBtnClick(object sender, RoutedEventArgs e)
         {
-            string uri = addressBox.Text;
-            string login = loginBox.Text;
-            string pass = passBox.Password;
+            string uri = addressBox.Text.Trim();
+            string login = loginBox.Text.Trim();
+            string pass = passBox.Password.Trim();
             string[] r = { };
             EntryControl entry = null;
+
+            if (!(uri.StartsWith("ftp://")))
+            {
+                addressBox.Text = "ftp://" + addressBox.Text;
+                uri = addressBox.Text;
+            }
+            if (!(uri.EndsWith("/")))
+            {
+                addressBox.Text = addressBox.Text + "/";
+                uri = addressBox.Text;
+            }
 
             try
             {
@@ -74,12 +85,15 @@ namespace FTPFileExplorer
                 statusBox.Text = "Connecting...";
                 await Task.Run(() =>
                 {
-                    //try
+                    try
                     {
                         client = new FtpClient.Client(uri, login, pass);
                         r = client.ListDirectoryDetails();
                     }
-                    //catch (Exception ex) { } needed in debug mode
+                    catch (Exception ex) 
+                    {
+                        MessageBox.Show(ex.Message);
+                    }                   
                 });
                 Cursor = Cursors.Arrow;
                 ripple.Visibility = Visibility.Hidden;
@@ -202,7 +216,7 @@ namespace FTPFileExplorer
 
                     await Task.Run(() =>
                     {
-                        status = client.DownloadFile(filename, sfd.FileName);
+                        status = client.DownloadFile(filename, sfd.FileName, pBar);
                     });
 
                     statusBox.Text = status.Substring(4);
@@ -219,7 +233,6 @@ namespace FTPFileExplorer
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            MessageBox.Show(e.Key.ToString());
             if (e.Key == Key.F5)
                 ConnectBtnClick(null, null);
             if (e.Key == Key.BrowserBack)
