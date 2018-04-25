@@ -329,5 +329,22 @@ namespace FTPFileExplorer
             }
 
         }
+
+        private void Rename(object sender, RoutedEventArgs e)
+        {
+            TextEnterWindow nameWin = new TextEnterWindow()
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            nameWin.okBtn.Click += (s, _) =>
+            {
+                string newName = nameWin.nameBox.Text.Trim();
+                if (newName != "")
+                {
+                    client.Rename((filesList.SelectedItem as EntryControl).FileName.Text, newName);
+                }
+            };
+            nameWin.ShowDialog();
+        }
     }
 }

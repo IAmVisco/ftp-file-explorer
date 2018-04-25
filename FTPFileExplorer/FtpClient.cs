@@ -206,6 +206,15 @@ namespace FTPFileExplorer
 
                 return GetStatusDescription(request);
             }
+
+            public string Rename(string curName, string newName)
+            {
+                FtpWebRequest request = CreateRequest(CombinePaths(url, curName), WebRequestMethods.Ftp.Rename);
+
+                request.RenameTo = newName;
+
+                return GetStatusDescription(request);
+            }
         }
     }
 }

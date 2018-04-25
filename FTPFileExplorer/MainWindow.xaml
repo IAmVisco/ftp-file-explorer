@@ -13,12 +13,12 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="FTP File Explorer" Height="600" Width="1050" KeyDown="Window_KeyDown">
+        Title="FTP File Explorer" Height="600" Width="1050" KeyDown="Window_KeyDown" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ContextMenu x:Key="cmFile">
             <MenuItem Header="Upload file" Click="FileULClick">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="Upload" />
+                    <materialDesign:PackIcon Kind="Upload"/>
                 </MenuItem.Icon>
             </MenuItem>
             <Separator/>
@@ -27,7 +27,7 @@
                     <materialDesign:PackIcon Kind="Download" />
                 </MenuItem.Icon>            
             </MenuItem>
-            <MenuItem Header="Rename file">
+            <MenuItem Header="Rename file" Click="Rename">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="Pencil" />
                 </MenuItem.Icon>
@@ -56,7 +56,7 @@
                     <materialDesign:PackIcon Kind="FolderPlus" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Rename folder">
+            <MenuItem Header="Rename folder" Click="Rename">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="Pencil" />
                 </MenuItem.Icon>
