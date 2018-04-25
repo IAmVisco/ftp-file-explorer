@@ -178,6 +178,7 @@ namespace FTPFileExplorer
                         entryControl.ContextMenu = this.FindResource("cmFile") as ContextMenu;
                 }
                 statusBox.Text = status;
+                status = "";
             }
             catch (Exception ex)
             {
@@ -230,6 +231,7 @@ namespace FTPFileExplorer
 
         private async void DownloadFile(EntryControl entry)
         {
+            statusBox.Text = "";
             if (isLoading)
             {
                 MessageBox.Show("Another loading is in progress,\nplease wait for it to finish.");
@@ -264,7 +266,7 @@ namespace FTPFileExplorer
 
                 isLoading = false;
 
-                statusBox.Text = status.Substring(4);
+                statusBox.Text = status;
                 pBar.Visibility = Visibility.Hidden;
                 percentage.Visibility = Visibility.Hidden;
             }
@@ -272,51 +274,46 @@ namespace FTPFileExplorer
 
         private async void UploadFile()
         {
-            try
+            statusBox.Text = "";
+            if (isLoading)
             {
-                if (isLoading)
-                {
-                    MessageBox.Show("Another loading is in progress,\nplease wait for it to finish.");
-                    return;
-                }
-                OpenFileDialog ofd = new OpenFileDialog
-                {
-                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    RestoreDirectory = true,
-                    Filter = "All files(*.*)|*.*",
-                };
+                MessageBox.Show("Another loading is in progress,\nplease wait for it to finish.");
+                return;
+            }
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                RestoreDirectory = true,
+                Filter = "All files(*.*)|*.*",
+            };
 
-                if (ofd.ShowDialog() == true)
-                {
-                    pBar.Visibility = Visibility.Visible;
-                    percentage.Visibility = Visibility.Visible;
-                    string url = addressBox.Text;
-                    isLoading = true;
+            if (ofd.ShowDialog() == true)
+            {
+                pBar.Visibility = Visibility.Visible;
+                percentage.Visibility = Visibility.Visible;
+                string url = addressBox.Text;
+                isLoading = true;
 
-                    await Task.Run(() =>
+                await Task.Run(() =>
+                {
+                    try
                     {
-                        try
-                        {
-                            status = client.UploadFile(ofd.FileName, ofd.SafeFileName, pBar);
-                        }
-                        catch(Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
-                    });
+                        status = client.UploadFile(ofd.FileName, ofd.SafeFileName, pBar);
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                });
 
-                    isLoading = false;
+                isLoading = false;
 
-                    statusBox.Text = status.Substring(4);
-                    pBar.Visibility = Visibility.Hidden;
-                    percentage.Visibility = Visibility.Hidden;
-                    Refresh();
-                }
+                statusBox.Text = status;
+                pBar.Visibility = Visibility.Hidden;
+                percentage.Visibility = Visibility.Hidden;
+                Refresh();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+ 
         }
 
         private void filesList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
