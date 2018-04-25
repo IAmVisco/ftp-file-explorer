@@ -13,7 +13,8 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="FTP File Explorer" Height="600" Width="1050" KeyDown="Window_KeyDown" WindowStartupLocation="CenterScreen">
+        Title="FTP File Explorer" Height="600" Width="1050" 
+        KeyDown="Window_KeyDown" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ContextMenu x:Key="cmFile">
             <MenuItem Header="Upload file" Click="FileULClick">
@@ -24,53 +25,59 @@
             <Separator/>
             <MenuItem Header="Download file" FontWeight="Bold" Click="FileDLClick">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="Download" />
+                    <materialDesign:PackIcon Kind="Download"/>
                 </MenuItem.Icon>            
             </MenuItem>
             <MenuItem Header="Rename file" Click="Rename">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="Pencil" />
+                    <materialDesign:PackIcon Kind="Pencil"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Delete file" Foreground="Red">
+            <MenuItem Header="Delete file" Foreground="Red" Click="DeleteFile">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="Delete" />
+                    <materialDesign:PackIcon Kind="Delete"/>
                 </MenuItem.Icon>
             </MenuItem>
             <Separator/>
-            <MenuItem Header="Create folder">
+            <MenuItem Header="Create folder" Click="CreateFolder">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="FolderPlus" />
+                    <materialDesign:PackIcon Kind="FolderPlus"/>
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
         <ContextMenu x:Key="cmFolder">
-            <MenuItem Header="Upload file">
+            <MenuItem Header="Upload file" Click="FileULClick">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="Upload" />
+                    <materialDesign:PackIcon Kind="Upload"/>
                 </MenuItem.Icon>
             </MenuItem>
             <Separator/>
-            <MenuItem Header="Create folder">
+            <MenuItem Header="Create folder" Click="CreateFolder">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="FolderPlus" />
+                    <materialDesign:PackIcon Kind="FolderPlus"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Rename folder" Click="Rename">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="Pencil" />
+                    <materialDesign:PackIcon Kind="Pencil"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Delete folder" Foreground="Red">
+            <MenuItem Header="Delete folder" Foreground="Red" Click="RemoveFolder">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="FolderRemove" />
+                    <materialDesign:PackIcon Kind="FolderRemove"/>
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
         <ContextMenu x:Key="cmUp">
             <MenuItem Header="Upload file" Click="FileULClick">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="Upload" />
+                    <materialDesign:PackIcon Kind="Upload"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator/>
+            <MenuItem Header="Create folder" Click="CreateFolder">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="FolderPlus"/>
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -87,11 +94,15 @@
         </Grid.RowDefinitions>
         <TextBlock Text="Server URI" Margin="5,10,0,7"/>
         <TextBox x:Name="addressBox" Grid.Column="2" Text="ftp://speedtest.tele2.net/"/>
-        <TextBlock x:Name="statusBox" Text="Status" Grid.Row="2" HorizontalAlignment="Left" Margin="10,6"/>
-        <Image gif:ImageBehavior.AnimatedSource="img/ripple.gif" Grid.Row="2" Grid.Column="2" 
+        <TextBlock x:Name="statusBox" Text="Status" Grid.Row="2" 
+                   HorizontalAlignment="Left" Margin="10,6" Grid.ColumnSpan="2"/>
+        <Image gif:ImageBehavior.AnimatedSource="img/ripple.gif" 
+               Grid.Row="2" Grid.Column="2" 
                x:Name="ripple" Visibility="Hidden" HorizontalAlignment="Right"/>
-        <ProgressBar Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Width="500" Height="6" 
-                     Margin="5,12"  x:Name="pBar" Visibility="Hidden" IsIndeterminate="True" ValueChanged="pBar_ValueChanged"/>
+        <ProgressBar Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left"
+                     Width="500" Height="6" 
+                     Margin="5,12"  x:Name="pBar" Visibility="Hidden" 
+                     IsIndeterminate="True" ValueChanged="pBar_ValueChanged"/>
         <TextBlock x:Name="percentage" Grid.Row="2" Grid.Column="2" Text="" Margin="510,0,0,0" 
                    VerticalAlignment="Center" FontSize="10" Visibility="Hidden"/>
         <Border Grid.Row="1" BorderThickness="0,0,1,1" BorderBrush="Gray" Margin="5,0,0,0">
@@ -130,7 +141,8 @@
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Size" Margin="12"/>
                 <TextBlock Grid.Row="0" Grid.Column="2" Text="Date" Margin="12"/>
                 <ListBox Grid.Row="1" Grid.ColumnSpan="3" Margin="5" 
-                         x:Name="filesList" HorizontalContentAlignment="Stretch" MouseRightButtonDown="filesList_MouseRightButtonDown">
+                         x:Name="filesList" HorizontalContentAlignment="Stretch" 
+                         MouseRightButtonDown="filesList_MouseRightButtonDown">
                     <ListBox.Resources>
                         <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">8</sys:Double>
                     </ListBox.Resources>

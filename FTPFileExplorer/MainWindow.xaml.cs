@@ -23,7 +23,7 @@ namespace FTPFileExplorer
     /// </summary>
     public partial class MainWindow : Window
     {
-        string prevAddress = "ftp://";
+        string prevAddress = "ftp://", status = "";
         FtpClient.Client client = null;
         bool isLoading = false;
 
@@ -81,7 +81,6 @@ namespace FTPFileExplorer
 
             try
             {
-                Cursor = Cursors.AppStarting;
                 ripple.Visibility = Visibility.Visible;
                 statusBox.Text = "Connecting...";
                 await Task.Run(() =>
@@ -178,15 +177,11 @@ namespace FTPFileExplorer
                     else
                         entryControl.ContextMenu = this.FindResource("cmFile") as ContextMenu;
                 }
-                statusBox.Text = "";
+                statusBox.Text = status;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString() + ": \n" + ex.Message);
-            }
-            finally
-            {
-                Cursor = Cursors.Arrow;
             }
 
         }
@@ -213,21 +208,14 @@ namespace FTPFileExplorer
 
         private void GoBack()
         {
-            addressBox.Text = addressBox.Text.Substring(0, addressBox.Text.Remove(addressBox.Text.Length - 1).LastIndexOf('/') + 1);
-            ConnectBtnClick(null, null);
-        }
-   
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F5)
-                ConnectBtnClick(null, null);
-            if (e.Key == Key.BrowserBack)
-                GoBack();
+            addressBox.Text = addressBox.Text.Substring(0, 
+                addressBox.Text.Remove(addressBox.Text.Length - 1).LastIndexOf('/') + 1);
+            Refresh();
         }
 
-        private void pBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void Refresh()
         {
-            percentage.Text = Math.Truncate((pBar.Value / pBar.Maximum) * 100).ToString() + "% " + pBar.Value.ToString() + "/" + pBar.Maximum.ToString();
+            ConnectBtnClick(null, null);
         }
 
         private void FileDLClick(object sender, RoutedEventArgs e)
@@ -235,11 +223,16 @@ namespace FTPFileExplorer
             DownloadFile(filesList.SelectedItem as EntryControl);
         }
 
+        private void FileULClick(object sender, RoutedEventArgs e)
+        {
+            UploadFile();
+        }
+
         private async void DownloadFile(EntryControl entry)
         {
             if (isLoading)
             {
-                MessageBox.Show("Another download in progress,\nplease wait for it to finish.");
+                MessageBox.Show("Another loading is in progress,\nplease wait for it to finish.");
                 return;
             }
             SaveFileDialog sfd = new SaveFileDialog
@@ -254,13 +247,19 @@ namespace FTPFileExplorer
             {
                 pBar.Visibility = Visibility.Visible;
                 percentage.Visibility = Visibility.Visible;
-                string status = "";
                 string filename = entry.FileName.Text;
                 isLoading = true;
 
                 await Task.Run(() =>
                 {
-                    status = client.DownloadFile(filename, sfd.FileName, pBar);
+                    try
+                    {
+                        status = client.DownloadFile(filename, sfd.FileName, pBar);
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 });
 
                 isLoading = false;
@@ -277,7 +276,7 @@ namespace FTPFileExplorer
             {
                 if (isLoading)
                 {
-                    MessageBox.Show("Another download in progress,\nplease wait for it to finish.");
+                    MessageBox.Show("Another loading is in progress,\nplease wait for it to finish.");
                     return;
                 }
                 OpenFileDialog ofd = new OpenFileDialog
@@ -291,13 +290,19 @@ namespace FTPFileExplorer
                 {
                     pBar.Visibility = Visibility.Visible;
                     percentage.Visibility = Visibility.Visible;
-                    string status = "";
                     string url = addressBox.Text;
                     isLoading = true;
 
                     await Task.Run(() =>
                     {
-                        status = client.UploadFile(ofd.FileName, ofd.SafeFileName, pBar);
+                        try
+                        {
+                            status = client.UploadFile(ofd.FileName, ofd.SafeFileName, pBar);
+                        }
+                        catch(Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
                     });
 
                     isLoading = false;
@@ -305,17 +310,13 @@ namespace FTPFileExplorer
                     statusBox.Text = status.Substring(4);
                     pBar.Visibility = Visibility.Hidden;
                     percentage.Visibility = Visibility.Hidden;
+                    Refresh();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-        }
-
-        private void FileULClick(object sender, RoutedEventArgs e)
-        {
-            UploadFile();
         }
 
         private void filesList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -336,15 +337,99 @@ namespace FTPFileExplorer
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+
             nameWin.okBtn.Click += (s, _) =>
             {
                 string newName = nameWin.nameBox.Text.Trim();
                 if (newName != "")
                 {
-                    client.Rename((filesList.SelectedItem as EntryControl).FileName.Text, newName);
+                    try
+                    { 
+                        status = client.Rename((filesList.SelectedItem as EntryControl).FileName.Text, newName);
+                        Refresh();
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
             };
             nameWin.ShowDialog();
+        }
+
+        private void DeleteFile(object sender, RoutedEventArgs e)
+        {
+            EntryControl entry = filesList.SelectedItem as EntryControl;
+            if (MessageBox.Show("Do you really want to delete " + entry.FileName.Text + "? This cannot be undone.", "Confirmation", 
+                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    status = client.DeleteFile(entry.FileName.Text);
+                    Refresh();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void CreateFolder(object sender, RoutedEventArgs e)
+        {
+            TextEnterWindow nameWin = new TextEnterWindow()
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+
+            nameWin.okBtn.Click += (s, _) =>
+            {
+                string newName = nameWin.nameBox.Text.Trim();
+                if (newName != "")
+                {
+                    try
+                    {
+                        status = client.CreateFolder(newName);
+                        Refresh();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+            };
+            nameWin.ShowDialog();
+        }
+
+        private void RemoveFolder(object sender, RoutedEventArgs e)
+        {
+            EntryControl entry = filesList.SelectedItem as EntryControl;
+            if (MessageBox.Show("Do you really want to delete " + entry.FileName.Text + "? This cannot be undone.", "Confirmation",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    status = client.RemoveFolder(entry.FileName.Text);
+                    Refresh();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F5)
+                Refresh();
+            if (e.Key == Key.BrowserBack)
+                GoBack();
+        }
+
+        private void pBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            percentage.Text = Math.Truncate((pBar.Value / pBar.Maximum) * 100).ToString() + "% " + pBar.Value.ToString() + "/" + pBar.Maximum.ToString();
         }
     }
 }

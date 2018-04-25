@@ -215,6 +215,27 @@ namespace FTPFileExplorer
 
                 return GetStatusDescription(request);
             }
+
+            public string DeleteFile(string fileName)
+            {
+                var request = CreateRequest(CombinePaths(url, fileName), WebRequestMethods.Ftp.DeleteFile);
+
+                return GetStatusDescription(request);
+            }
+
+            public string CreateFolder(string directoryName)
+            {
+                var request = CreateRequest(CombinePaths(url, directoryName), WebRequestMethods.Ftp.MakeDirectory);
+
+                return GetStatusDescription(request);
+            }
+
+            public string RemoveFolder(string directoryName)
+            {
+                var request = CreateRequest(CombinePaths(url, directoryName), WebRequestMethods.Ftp.RemoveDirectory);
+
+                return GetStatusDescription(request);
+            }
         }
     }
 }
