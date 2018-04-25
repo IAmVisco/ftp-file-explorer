@@ -13,6 +13,24 @@
         TextElement.FontSize="14"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
         Title="FTP File Explorer" Height="600" Width="1050" KeyDown="Window_KeyDown">
+    <Window.Resources>
+        <ContextMenu x:Key="cmFile">
+            <MenuItem Header="Upload file"/>
+            <Separator/>
+            <MenuItem Header="Download file" FontWeight="Bold"/>
+            <MenuItem Header="Rename file"/>
+            <MenuItem Header="Delete file" Foreground="Red"/>
+            <Separator/>
+            <MenuItem Header="Create folder"/>
+        </ContextMenu>
+        <ContextMenu x:Key="cmFolder">
+            <MenuItem Header="Upload file"/>
+            <Separator/>
+            <MenuItem Header="Create folder"/>
+            <MenuItem Header="Rename folder"/>
+            <MenuItem Header="Delete folder" Foreground="Red"/>
+        </ContextMenu>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.3*"/>

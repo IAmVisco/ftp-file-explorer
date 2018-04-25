@@ -168,10 +168,16 @@ namespace FTPFileExplorer
                     list.Add(entry);
                 }
                 list.Reverse();
-
+                
                 filesList.Items.Clear();
                 foreach (EntryControl entryControl in list)
+                {
                     filesList.Items.Add(entryControl);
+                    if (entryControl.Type == "dir")
+                        entryControl.ContextMenu =  this.FindResource("cmFolder") as ContextMenu;
+                    else
+                        entryControl.ContextMenu = this.FindResource("cmFile") as ContextMenu;
+                }
                 statusBox.Text = "";
             }
             catch (Exception ex)
