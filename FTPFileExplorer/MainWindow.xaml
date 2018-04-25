@@ -16,16 +16,17 @@
         Title="FTP File Explorer" Height="600" Width="1050" KeyDown="Window_KeyDown">
     <Window.Resources>
         <ContextMenu x:Key="cmFile">
-            <MenuItem Header="Upload file">
+            <MenuItem Header="Upload file" Click="FileULClick">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="Upload" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator/>
-            <MenuItem Header="Download file" FontWeight="Bold">
+            <MenuItem Header="Download file" FontWeight="Bold" Click="FileDLClick">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="Download" />
-                </MenuItem.Icon>            </MenuItem>
+                </MenuItem.Icon>            
+            </MenuItem>
             <MenuItem Header="Rename file">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="Pencil" />
@@ -63,6 +64,13 @@
             <MenuItem Header="Delete folder" Foreground="Red">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="FolderRemove" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+        <ContextMenu x:Key="cmUp">
+            <MenuItem Header="Upload file" Click="FileULClick">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="Upload" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -122,7 +130,7 @@
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Size" Margin="12"/>
                 <TextBlock Grid.Row="0" Grid.Column="2" Text="Date" Margin="12"/>
                 <ListBox Grid.Row="1" Grid.ColumnSpan="3" Margin="5" 
-                         x:Name="filesList" HorizontalContentAlignment="Stretch">
+                         x:Name="filesList" HorizontalContentAlignment="Stretch" MouseRightButtonDown="filesList_MouseRightButtonDown">
                     <ListBox.Resources>
                         <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">8</sys:Double>
                     </ListBox.Resources>

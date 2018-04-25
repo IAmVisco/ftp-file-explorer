@@ -25,7 +25,7 @@ namespace FTPFileExplorer
     {
         string prevAddress = "ftp://";
         FtpClient.Client client = null;
-        bool isDownloading = false;
+        bool isLoading = false;
 
         #region Extension lists
         List<string> picExt = new List<string>()
@@ -191,7 +191,7 @@ namespace FTPFileExplorer
 
         }
 
-        private async void FolderClick(object sender, MouseButtonEventArgs e)
+        private void FolderClick(object sender, MouseButtonEventArgs e)
         {
             EntryControl entry = (sender as EntryControl);
 
@@ -207,38 +207,7 @@ namespace FTPFileExplorer
             }
             else
             {
-                if (isDownloading)
-                {
-                    MessageBox.Show("Another download in progress,\nplease wait for it to finish.");
-                    return;
-                }
-                SaveFileDialog sfd = new SaveFileDialog
-                {
-                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads",
-                    RestoreDirectory = true,
-                    Filter = "All files(*.*)|*.*",
-                    FileName = entry.FileName.Text
-                };
-
-                if (sfd.ShowDialog() == true)
-                {
-                    pBar.Visibility = Visibility.Visible;
-                    percentage.Visibility = Visibility.Visible;
-                    string status = "";
-                    string filename = entry.FileName.Text;
-                    isDownloading = true;
-
-                    await Task.Run(() =>
-                    {
-                        status = client.DownloadFile(filename, sfd.FileName, pBar);
-                    });
-
-                    isDownloading = false;
-
-                    statusBox.Text = status.Substring(4);
-                    pBar.Visibility = Visibility.Hidden;
-                    percentage.Visibility = Visibility.Hidden;
-                }
+                DownloadFile(entry);
             }
         }
 
@@ -259,6 +228,106 @@ namespace FTPFileExplorer
         private void pBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             percentage.Text = Math.Truncate((pBar.Value / pBar.Maximum) * 100).ToString() + "% " + pBar.Value.ToString() + "/" + pBar.Maximum.ToString();
+        }
+
+        private void FileDLClick(object sender, RoutedEventArgs e)
+        {
+            DownloadFile(filesList.SelectedItem as EntryControl);
+        }
+
+        private async void DownloadFile(EntryControl entry)
+        {
+            if (isLoading)
+            {
+                MessageBox.Show("Another download in progress,\nplease wait for it to finish.");
+                return;
+            }
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads",
+                RestoreDirectory = true,
+                Filter = "All files(*.*)|*.*",
+                FileName = entry.FileName.Text
+            };
+
+            if (sfd.ShowDialog() == true)
+            {
+                pBar.Visibility = Visibility.Visible;
+                percentage.Visibility = Visibility.Visible;
+                string status = "";
+                string filename = entry.FileName.Text;
+                isLoading = true;
+
+                await Task.Run(() =>
+                {
+                    status = client.DownloadFile(filename, sfd.FileName, pBar);
+                });
+
+                isLoading = false;
+
+                statusBox.Text = status.Substring(4);
+                pBar.Visibility = Visibility.Hidden;
+                percentage.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private async void UploadFile()
+        {
+            try
+            {
+                if (isLoading)
+                {
+                    MessageBox.Show("Another download in progress,\nplease wait for it to finish.");
+                    return;
+                }
+                OpenFileDialog ofd = new OpenFileDialog
+                {
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    RestoreDirectory = true,
+                    Filter = "All files(*.*)|*.*",
+                };
+
+                if (ofd.ShowDialog() == true)
+                {
+                    pBar.Visibility = Visibility.Visible;
+                    percentage.Visibility = Visibility.Visible;
+                    string status = "";
+                    string url = addressBox.Text;
+                    isLoading = true;
+
+                    await Task.Run(() =>
+                    {
+                        status = client.UploadFile(ofd.FileName, ofd.SafeFileName, pBar);
+                    });
+
+                    isLoading = false;
+
+                    statusBox.Text = status.Substring(4);
+                    pBar.Visibility = Visibility.Hidden;
+                    percentage.Visibility = Visibility.Hidden;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void FileULClick(object sender, RoutedEventArgs e)
+        {
+            UploadFile();
+        }
+
+        private void filesList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var selection = ((ListBox)sender).InputHitTest(Mouse.GetPosition(filesList));
+
+            if (selection is ScrollViewer)
+            {
+                var cm = this.FindResource("cmUp") as ContextMenu;
+                cm.IsOpen = true;
+            }
+
         }
     }
 }

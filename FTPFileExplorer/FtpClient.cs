@@ -168,6 +168,44 @@ namespace FTPFileExplorer
                     return response.StatusDescription;
                 }
             }
+
+            public string UploadFile(string source, string dest, ProgressBar pBar)
+            {
+                FtpWebRequest request = CreateRequest(CombinePaths(url, dest), WebRequestMethods.Ftp.UploadFile);
+
+                using (var stream = request.GetRequestStream())
+                {
+                    using (FileStream fileStream = File.Open(source, FileMode.Open))
+                    {
+                        int num;
+
+                        pBar.Dispatcher.Invoke(() =>
+                        {
+                            if (fileStream.Length <= 0)
+                                pBar.IsIndeterminate = true;
+                            else
+                            {
+                                pBar.IsIndeterminate = false;
+                                pBar.Maximum = fileStream.Length;
+                                pBar.Value = 0;
+                            }
+                        });
+                        byte[] buffer = new byte[buffSize];
+
+                        while ((num = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            stream.Write(buffer, 0, num);
+
+                            pBar.Dispatcher.Invoke(() =>
+                            {
+                                pBar.Value = pBar.Value + num;
+                            });
+                        }
+                    }
+                }
+
+                return GetStatusDescription(request);
+            }
         }
     }
 }
