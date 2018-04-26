@@ -15,26 +15,24 @@ using System.Windows.Shapes;
 namespace FTPFileExplorer
 {
     /// <summary>
-    /// Interaction logic for TextEnterWindow.xaml
+    /// Interaction logic for ConfimationWindow.xaml
     /// </summary>
-    public partial class TextEnterWindow : Window
+    public partial class ConfimationWindow : Window
     {
-        public TextEnterWindow()
+        public ConfimationWindow(string fileName)
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (!(nameBox.Text.Trim() == ""))
-            {;
-                this.Close();
-            }
+            msgBox.Text = "Do you really want to delete " + fileName + "?\nThis can't be undone.";
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            nameBox.Focus();
+            nBtn.Focus();
+        }
+
+        private void BtnClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

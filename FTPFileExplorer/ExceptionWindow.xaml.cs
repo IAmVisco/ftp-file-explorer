@@ -15,26 +15,19 @@ using System.Windows.Shapes;
 namespace FTPFileExplorer
 {
     /// <summary>
-    /// Interaction logic for TextEnterWindow.xaml
+    /// Interaction logic for ExceptionWindow.xaml
     /// </summary>
-    public partial class TextEnterWindow : Window
+    public partial class ExceptionWindow : Window
     {
-        public TextEnterWindow()
+        public ExceptionWindow(string exMsg)
         {
             InitializeComponent();
+            msgBox.Text = exMsg;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void BtnClick(object sender, RoutedEventArgs e)
         {
-            if (!(nameBox.Text.Trim() == ""))
-            {;
-                this.Close();
-            }
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            nameBox.Focus();
+            this.Close();
         }
     }
 }

@@ -11,10 +11,10 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"     
-        Title="Enter new name" Height="200" Width="350">
+        Title="Enter new name" Height="200" Width="350" WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" ResizeMode="NoResize">
     <Grid>
         <TextBox Height="23" Margin="0,0,0,40" Width="150" TextAlignment="Center" x:Name="nameBox"
-                 TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,0,0,-1"/>
-        <Button Content="OK" HorizontalAlignment="Center" x:Name="okBtn" VerticalAlignment="Center" Margin="0,70,0,0" Click="Button_Click"/>
+                 TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,0,0,-1" TabIndex="0"/>
+        <Button Content="OK" HorizontalAlignment="Center" x:Name="okBtn" VerticalAlignment="Center" Margin="0,70,0,0" Click="Button_Click" TabIndex="1" IsDefault="True"/>
     </Grid>
 </Window>

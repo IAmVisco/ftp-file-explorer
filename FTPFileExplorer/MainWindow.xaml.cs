@@ -195,7 +195,7 @@ namespace FTPFileExplorer
             {
                 prevAddress = entry.address;
                 addressBox.Text = entry.address + entry.FileName.Text + "/";
-                ConnectBtnClick(null, null);
+                Refresh();
             }
             else if (entry.Type == "up")
             {
@@ -219,6 +219,16 @@ namespace FTPFileExplorer
             ConnectBtnClick(null, null);
         }
 
+        private void ShowException(string exMsg)
+        {
+            ExceptionWindow exWin = new ExceptionWindow(exMsg)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            exWin.ShowDialog();
+        }
+
         private void FileDLClick(object sender, RoutedEventArgs e)
         {
             DownloadFile(filesList.SelectedItem as EntryControl);
@@ -234,7 +244,7 @@ namespace FTPFileExplorer
             statusBox.Text = "";
             if (isLoading)
             {
-                MessageBox.Show("Another loading is in progress,\nplease wait for it to finish.");
+                ShowException("Another loading is in progress,\nplease wait for it to finish.");
                 return;
             }
             SaveFileDialog sfd = new SaveFileDialog
@@ -260,7 +270,7 @@ namespace FTPFileExplorer
                     }
                     catch(Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        ShowException(ex.Message);
                     }
                 });
 
@@ -277,7 +287,7 @@ namespace FTPFileExplorer
             statusBox.Text = "";
             if (isLoading)
             {
-                MessageBox.Show("Another loading is in progress,\nplease wait for it to finish.");
+                ShowException("Another loading is in progress,\nplease wait for it to finish.");
                 return;
             }
             OpenFileDialog ofd = new OpenFileDialog
@@ -302,7 +312,7 @@ namespace FTPFileExplorer
                     }
                     catch(Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        ShowException(ex.Message);
                     }
                 });
 
@@ -332,7 +342,8 @@ namespace FTPFileExplorer
         {
             TextEnterWindow nameWin = new TextEnterWindow()
             {
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
 
             nameWin.okBtn.Click += (s, _) =>
@@ -347,7 +358,7 @@ namespace FTPFileExplorer
                     }
                     catch(Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        ShowException(ex.Message);
                     }
                 }
             };
@@ -357,8 +368,12 @@ namespace FTPFileExplorer
         private void DeleteFile(object sender, RoutedEventArgs e)
         {
             EntryControl entry = filesList.SelectedItem as EntryControl;
-            if (MessageBox.Show("Do you really want to delete " + entry.FileName.Text + "? This cannot be undone.", "Confirmation", 
-                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            ConfimationWindow yesNoWin = new ConfimationWindow(entry.FileName.Text)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            yesNoWin.yBtn.Click += (s, _) =>
             {
                 try
                 {
@@ -367,9 +382,10 @@ namespace FTPFileExplorer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    ShowException(ex.Message);
                 }
-            }
+            };
+            yesNoWin.ShowDialog();
         }
 
         private void CreateFolder(object sender, RoutedEventArgs e)
@@ -391,7 +407,7 @@ namespace FTPFileExplorer
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        ShowException(ex.Message);
                     }
                 }
             };
@@ -401,8 +417,12 @@ namespace FTPFileExplorer
         private void RemoveFolder(object sender, RoutedEventArgs e)
         {
             EntryControl entry = filesList.SelectedItem as EntryControl;
-            if (MessageBox.Show("Do you really want to delete " + entry.FileName.Text + "? This cannot be undone.", "Confirmation",
-                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            ConfimationWindow yesNoWin = new ConfimationWindow(entry.FileName.Text)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            yesNoWin.yBtn.Click += (s, _) =>
             {
                 try
                 {
@@ -411,14 +431,16 @@ namespace FTPFileExplorer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    ShowException(ex.Message);
                 }
-            }
+            };
+            yesNoWin.ShowDialog();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.F5)
+            if (e.Key == Key.F5 ||
+               (e.Key == Key.Enter && (addressBox.IsFocused || loginBox.IsFocused || passBox.IsFocused)))
                 Refresh();
             if (e.Key == Key.BrowserBack)
                 GoBack();
