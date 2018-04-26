@@ -178,7 +178,7 @@ namespace FTPFileExplorer
                         entryControl.ContextMenu = this.FindResource("cmFile") as ContextMenu;
                 }
                 statusBox.Text = status;
-                status = "";
+                status = "";               
             }
             catch (Exception ex)
             {
@@ -439,11 +439,22 @@ namespace FTPFileExplorer
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            bool ctrlPressed = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
+
             if (e.Key == Key.F5 ||
                (e.Key == Key.Enter && (addressBox.IsFocused || loginBox.IsFocused || passBox.IsFocused)))
                 Refresh();
+
             if (e.Key == Key.BrowserBack)
                 GoBack();
+
+            if (ctrlPressed && e.Key == Key.S)
+            {
+                if (LeftBar.Width == new GridLength(0))
+                    LeftBar.Width = new GridLength(0.3, GridUnitType.Star);
+                else
+                    LeftBar.Width = new GridLength(0);
+            }
         }
 
         private void pBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

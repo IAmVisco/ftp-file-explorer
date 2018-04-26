@@ -84,7 +84,7 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition Width="0.3*" Name="LeftBar"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -93,7 +93,7 @@
             <RowDefinition Height="30px"/>
         </Grid.RowDefinitions>
         <TextBlock Text="Server URI" Margin="5,10,0,7"/>
-        <TextBox x:Name="addressBox" Grid.Column="2" Text="ftp://speedtest.tele2.net/"/>
+        <TextBox x:Name="addressBox" Grid.Column="2" Text="ftp://speedtest.tele2.net/" Margin="5,0,0,0"/>
         <TextBlock x:Name="statusBox" Text="Status" Grid.Row="2" 
                    HorizontalAlignment="Left" Margin="10,6" Grid.ColumnSpan="2"/>
         <Image gif:ImageBehavior.AnimatedSource="img/ripple.gif" 
