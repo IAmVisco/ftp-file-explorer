@@ -19,7 +19,6 @@ namespace FTPFileExplorer
             public bool Passive = true;
             public bool Binary = true;
             public bool EnableSSL = false;
-            public bool Hash = false;
 
             public Client(string url, string username, string password)
             {
@@ -209,7 +208,7 @@ namespace FTPFileExplorer
 
             public string Rename(string curName, string newName)
             {
-                FtpWebRequest request = CreateRequest(CombinePaths(url, curName), WebRequestMethods.Ftp.Rename);
+                var request = CreateRequest(CombinePaths(url, curName), WebRequestMethods.Ftp.Rename);
 
                 request.RenameTo = newName;
 

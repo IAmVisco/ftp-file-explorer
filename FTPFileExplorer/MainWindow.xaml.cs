@@ -38,7 +38,7 @@ namespace FTPFileExplorer
         };
         List<string> docsExt = new List<string>()
         {
-            "img/docs.png", "doc", "docx"
+            "img/docs.png", "doc", "docx", "txt"
         };
         List<string> sheetsExt = new List<string>()
         {
@@ -323,7 +323,6 @@ namespace FTPFileExplorer
                 percentage.Visibility = Visibility.Hidden;
                 Refresh();
             }
- 
         }
 
         private void filesList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -335,7 +334,6 @@ namespace FTPFileExplorer
                 var cm = this.FindResource("cmUp") as ContextMenu;
                 cm.IsOpen = true;
             }
-
         }
 
         private void Rename(object sender, RoutedEventArgs e)
