@@ -27,7 +27,7 @@ namespace FTPFileExplorer
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (!(nameBox.Text.Trim() == ""))
-            {;
+            {
                 this.Close();
             }
         }
